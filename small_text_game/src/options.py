@@ -1,0 +1,2 @@
+EMPTY = ' '
+TREE = 'T'
