@@ -26,7 +26,7 @@ f - атаковать соседнего монстра
 Как выглядит процесс со стороны игрока:
 ............
 .  @     1 .
-.*   1 x  $.
+.*  H1 x  $.
 ............
 
 "В Вашем инвентаре 0 сокровищ"
@@ -66,5 +66,6 @@ game.place_on_map(MAX_TREES, TREE)
 game.place_on_map(MAX_STONES, STONE)
 game.place_on_map(MAX_LETTERS, LETTER)
 game.place_on_map(MAX_TREASURES, TREASURE)
+game.user.place_on_map(game.map)
 
 game.run()

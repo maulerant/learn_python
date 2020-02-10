@@ -35,51 +35,62 @@ class GameTestCase(unittest.TestCase):
 
     @patch('small_text_game.src.map.Map')
     @patch('small_text_game.src.user.User')
-    def test_game_turn(self, MockMap, MockUser):
+    def test_game_turn(self, MockUser, MockMap):
         game = Game()
         game.map = MockMap
         game.user = MockUser
+        attrs = {'is_dead.return_value': False, 'has.return_value': False}
+        game.user.configure_mock(**attrs)
         game.turn()
         game.map.show.assert_called_once()
         # game.user.see.assert_called_once()
 
-
     @patch('small_text_game.src.map.Map')
-    def test_game_turn_raise_exception_if_user_dead(self, MockMap):
+    @patch('small_text_game.src.user.User')
+    def test_game_turn_raise_exception_if_user_dead(self, MockUser, MockMap):
         game = Game()
         game.map = MockMap
+        game.user = MockUser
+        attrs = {'is_dead.return_value': True, 'has.return_value': False}
+        game.user.configure_mock(**attrs)
 
-        game.user.health = 0
         with self.assertRaises(GameOverException):
             game.turn()
 
     @patch('small_text_game.src.map.Map')
-    def test_game_turn_raise_exception_if_users_inventory_full(self, MockMap):
+    @patch('small_text_game.src.user.User')
+    def test_game_turn_raise_exception_if_users_inventory_full(self, MockUser, MockMap):
         game = Game()
         game.map = MockMap
+        game.user = MockUser
+        attrs = {'is_dead.return_value': False, 'has.return_value': True}
+        game.user.configure_mock(**attrs)
 
-        game.user.inventory[TREASURE] = MAX_TREASURES
         with self.assertRaises(GameOverException):
             game.turn()
 
-    def test_game_not_over_if_user_live_and_inventory_empty(self):
+    @patch('small_text_game.src.user.User')
+    def test_game_not_over_if_user_live_and_inventory_empty(self, MockUser):
         game = Game()
-        self.assertFalse(game.user.is_dead())
-        self.assertFalse(game.user.has(MAX_TREASURES, TREASURE))
+        game.user = MockUser
+        attrs = {'is_dead.return_value': False, 'has.return_value': False}
+        game.user.configure_mock(**attrs)
         self.assertFalse(game.is_over())
 
-    def test_game_is_over_if_user_dead(self):
+    @patch('small_text_game.src.user.User')
+    def test_game_is_over_if_user_dead(self, MockUser):
         game = Game()
-        game.user.health = 0
-        self.assertTrue(game.user.is_dead())
-        self.assertFalse(game.user.has(MAX_TREASURES, TREASURE))
+        game.user = MockUser
+        attrs = {'is_dead.return_value': True, 'has.return_value': False}
+        game.user.configure_mock(**attrs)
         self.assertTrue(game.is_over())
 
-    def test_game_is_over_if_inventory_full(self):
+    @patch('small_text_game.src.user.User')
+    def test_game_is_over_if_inventory_full(self, MockUser):
         game = Game()
-        game.user.inventory[TREASURE] = MAX_TREASURES
-        self.assertFalse(game.user.is_dead())
-        self.assertTrue(game.user.has(MAX_TREASURES, TREASURE))
+        game.user = MockUser
+        attrs = {'is_dead.return_value': False, 'has.return_value': True}
+        game.user.configure_mock(**attrs)
         self.assertTrue(game.is_over())
 
 

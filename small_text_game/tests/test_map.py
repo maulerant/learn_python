@@ -35,6 +35,18 @@ class MapTestCase(unittest.TestCase):
         self.assertEqual(map.height, height)
         self.assertEqual(map.empty_char, TREE)
 
+    def test_get_item_by_xy(self):
+        map = Map()
+        map.generate(20, 10, EMPTY)
+        self.assertEqual(map.get(-1, -1), STONE)
+        self.assertEqual(map.get(1, 1), EMPTY)
+
+    def test_is_valid_pos(self):
+        map = Map()
+        map.generate(20, 10, EMPTY)
+        self.assertFalse(map.is_valid_pos(-1, -1))
+        self.assertTrue(map.is_valid_pos(1, 1))
+
     def test_put_item_on_map(self):
         x, y = randint(0, 20 - 1), randint(0, 10 - 1)
         map = Map()
@@ -70,11 +82,29 @@ class MapTestCase(unittest.TestCase):
         self.assertEqual(map.count(TREE), 20)
 
     def test_get_max_quantity_of_chars(self):
+        width, height = 10, 10
+        map = Map()
+        map.generate(width, height, EMPTY)
+        self.assertEqual(map.get_max_quantity(1), 1)
+        self.assertEqual(map.get_max_quantity(width * height), width * height)
+        self.assertEqual(map.get_max_quantity(width * height + 1), width * height)
+
+    def test_get_char_in_direction(self):
         map = Map()
         map.generate(10, 10, EMPTY)
-        self.assertEqual(map.get_max_quantity(1), 1)
-        self.assertEqual(map.get_max_quantity(10 * 10), 10 * 10)
-        self.assertEqual(map.get_max_quantity(10 * 10 + 1), 10 * 10)
+        self.assertEqual(map.get_in_direction(-1, -1, DIRECTION_UP), STONE)
+        self.assertEqual(map.get_in_direction(1, 1, DIRECTION_UP), EMPTY)
+
+    def test_calculate_position_by_xy_and_direction(self):
+        map = Map()
+        self.assertEqual(map.calculate_position(1, 1, DIRECTION_UP), (1, 0))
+        self.assertEqual(map.calculate_position(1, 1, DIRECTION_DOWN), (1, 2))
+        self.assertEqual(map.calculate_position(1, 1, DIRECTION_LEFT), (0, 1))
+        self.assertEqual(map.calculate_position(1, 1, DIRECTION_RIGHT), (2, 1))
+
+    def test_get_empty_random_position(self):
+        map = Map()
+        self.assertTrue(False)
 
 
 if __name__ == '__main__':
