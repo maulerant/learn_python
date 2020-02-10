@@ -22,13 +22,20 @@ class Map:
     def put(self, x, y, char):
         self.map[y][x] = char
 
+    def get_max_quantity(self, quantity):
+        count_empty_char = self.count(self.empty_char)
+        return count_empty_char if count_empty_char < quantity else quantity
+
     def place(self, quantity, char):
-        for i in range(quantity):
-            while True:
-                x, y = randint(0, self.width - 1), randint(0, self.height - 1)
-                if self.check(x, y, self.empty_char):
-                    self.put(x, y, char)
-                    break
+        for i in range(self.get_max_quantity(quantity)):
+            self._place_item_to_random_position(char)
+
+    def _place_item_to_random_position(self, char):
+        while True:
+            x, y = randint(0, self.width - 1), randint(0, self.height - 1)
+            if self.check(x, y, self.empty_char):
+                self.put(x, y, char)
+                break
 
     def check(self, x, y, char):
         return self.map[y][x] == char
@@ -36,6 +43,11 @@ class Map:
     def count(self, char):
         count = 0
         for y in range(0, self.height):
-            for x in range(0, self.width):
-                count += 1 if self.map[y][x] == char else 0
+            count += self.map[y].count(char)
         return count
+
+    def show(self):
+        print('-' * self.width)
+        for y in range(self.height):
+            print(''.join(self.map[y]))
+        print('-' * self.width)

@@ -69,6 +69,13 @@ class MapTestCase(unittest.TestCase):
         map.place(20, TREE)
         self.assertEqual(map.count(TREE), 20)
 
+    def test_get_max_quantity_of_chars(self):
+        map = Map()
+        map.generate(10, 10, EMPTY)
+        self.assertEqual(map.get_max_quantity(1), 1)
+        self.assertEqual(map.get_max_quantity(10 * 10), 10 * 10)
+        self.assertEqual(map.get_max_quantity(10 * 10 + 1), 10 * 10)
+
 
 if __name__ == '__main__':
     unittest.main()
