@@ -19,11 +19,18 @@ class Game:
         self.map.place(quantity, char)
 
     def run(self):
+        self.generate_map(MAP_WIDTH, MAP_HEIGHT, EMPTY)
+        self.place_on_map(MAX_TREES, TREE)
+        self.place_on_map(MAX_STONES, STONE)
+        self.place_on_map(MAX_LETTERS, LETTER)
+        self.place_on_map(MAX_TREASURES, TREASURE)
+        self.user.place_on(self.map)
         while True:
             self.turn()
 
     def turn(self):
         self.map.show()
+        self.user.show_info(self.map)
         if self.is_over():
             raise GameOverException()
 

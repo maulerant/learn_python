@@ -33,7 +33,7 @@ f - атаковать соседнего монстра
 > Ваше действие [w, s, a, d]:?
 
 если ходим и ход возможен:
-"вы идете по зеленой траве"
+"Впереди пусто"
 
 если в клетке по ходу дерево:
 "вы уперлись лбом в дерево"x
@@ -61,11 +61,5 @@ from small_text_game.src.options import *
 from small_text_game.src.game import Game
 
 game = Game()
-game.generate_map(MAP_WIDTH, MAP_HEIGHT, EMPTY)
-game.place_on_map(MAX_TREES, TREE)
-game.place_on_map(MAX_STONES, STONE)
-game.place_on_map(MAX_LETTERS, LETTER)
-game.place_on_map(MAX_TREASURES, TREASURE)
-game.user.place_on_map(game.map)
 
 game.run()

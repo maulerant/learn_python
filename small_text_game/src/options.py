@@ -22,3 +22,7 @@ DIRECTION_UP = 'w'
 DIRECTION_DOWN = 's'
 DIRECTION_LEFT = 'a'
 DIRECTION_RIGHT = 'd'
+
+HACK = 'x'
+PICK_UP = 'i'
+READ = 'r'

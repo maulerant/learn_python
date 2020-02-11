@@ -1,8 +1,10 @@
 import unittest
+from random import randint
 from unittest.mock import patch
 
 from small_text_game.src.user import User
 from small_text_game.src.options import *
+from small_text_game.src.brain import Brain
 
 
 class UserTestCase(unittest.TestCase):
@@ -10,6 +12,7 @@ class UserTestCase(unittest.TestCase):
         user = User('Name')
         self.assertIsNotNone(user)
         self.assertEqual(user.name, 'Name')
+        self.assertEqual(user.action, '')
 
     def test_user_has_inventory(self):
         user = User('Name')
@@ -19,6 +22,10 @@ class UserTestCase(unittest.TestCase):
     def test_user_has_health(self):
         user = User('Name')
         self.assertEqual(user.health, MAX_USER_HEALTH)
+
+    def test_user_has_brain(self):
+        user = User('Name')
+        self.assertIsInstance(user.brain, Brain)
 
     def test_get_user_default_position(self):
         user = User('Name')
@@ -62,11 +69,40 @@ class UserTestCase(unittest.TestCase):
 
     @patch('small_text_game.src.map.Map')
     def test_place_on_map(self, MockMap):
+        x, y = randint(0, 10), randint(0, 20)
         user = User('User')
-        attrs = {'get_empty_random_position.return_value': (1, 1)}
+        attrs = {'get_empty_random_position.return_value': (x, y)}
         MockMap.configure_mock(**attrs)
-        user.place_on_map(MockMap)
-        self.assertEqual(user.position, (1, 1))
+        user.place_on(MockMap)
+        self.assertEqual(user.position, [x, y])
+        MockMap.put.assert_called_with(x, y, USER)
+
+    def test_user_can_do_action(self):
+        user = User('User')
+        self.assertEqual(user.can_do_action(EMPTY), {
+            'message': 'Впереди пусто',
+            'actions': [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT]
+        })
+        self.assertEqual(user.can_do_action(TREE), {
+            'message': 'вы уперлись лбом в дерево',
+            'actions': [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT, HACK]
+        })
+        self.assertEqual(user.can_do_action(STONE), {
+            'message': 'вы уперлись лбом в камень',
+            'actions': [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT]
+        })
+        self.assertEqual(user.can_do_action(LETTER), {
+            'message': 'Вы видите письмо',
+            'actions': [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT, READ]
+        })
+        self.assertEqual(user.can_do_action(TREASURE), {
+            'message': 'Вы видите сокровище',
+            'actions': [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT, PICK_UP]
+        })
+
+    def test_user_action(self):
+        user = User()
+        self.assertTrue(False)
 
 
 if __name__ == '__main__':

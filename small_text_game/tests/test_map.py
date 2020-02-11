@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import patch
 from random import choice, randint
 
 from small_text_game.src.map import Map
@@ -102,9 +103,17 @@ class MapTestCase(unittest.TestCase):
         self.assertEqual(map.calculate_position(1, 1, DIRECTION_LEFT), (0, 1))
         self.assertEqual(map.calculate_position(1, 1, DIRECTION_RIGHT), (2, 1))
 
-    def test_get_empty_random_position(self):
+    @patch('small_text_game.src.map.randint')
+    def test_get_empty_random_position(self, mocked_randint):
         map = Map()
-        self.assertTrue(False)
+        map.generate(20, 20, EMPTY)
+        random_value = randint(1, 10)
+        mocked_randint.return_value = random_value
+        self.assertEqual(map.get_empty_random_position(), (random_value, random_value))
+
+        map.generate(20, 20, TREE)
+        map.empty_char = EMPTY
+        self.assertEqual(map.get_empty_random_position(), (-1, -1))
 
 
 if __name__ == '__main__':
