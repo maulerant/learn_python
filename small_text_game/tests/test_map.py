@@ -90,12 +90,6 @@ class MapTestCase(unittest.TestCase):
         self.assertEqual(map.get_max_quantity(width * height), width * height)
         self.assertEqual(map.get_max_quantity(width * height + 1), width * height)
 
-    def test_get_char_in_direction(self):
-        map = Map()
-        map.generate(10, 10, EMPTY)
-        self.assertEqual(map.get_in_direction(-1, -1, DIRECTION_UP), STONE)
-        self.assertEqual(map.get_in_direction(1, 1, DIRECTION_UP), EMPTY)
-
     def test_calculate_position_by_xy_and_direction(self):
         map = Map()
         self.assertEqual(map.calculate_position(1, 1, DIRECTION_UP), (1, 0))

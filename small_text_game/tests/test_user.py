@@ -2,9 +2,10 @@ import unittest
 from random import randint
 from unittest.mock import patch
 
+from small_text_game.src.map import Map
 from small_text_game.src.user import User
 from small_text_game.src.options import *
-from small_text_game.src.brain import Brain
+from small_text_game.src.brain import *
 
 
 class UserTestCase(unittest.TestCase):
@@ -61,13 +62,6 @@ class UserTestCase(unittest.TestCase):
         self.assertTrue(user.is_dead())
 
     @patch('small_text_game.src.map.Map')
-    def test_user_see(self, MockMap):
-        user = User('User')
-        attrs = {'get_in_direction.return_value': TREE}
-        MockMap.configure_mock(**attrs)
-        self.assertEqual(user.see(MockMap), TREE)
-
-    @patch('small_text_game.src.map.Map')
     def test_place_on_map(self, MockMap):
         x, y = randint(0, 10), randint(0, 20)
         user = User('User')
@@ -77,32 +71,31 @@ class UserTestCase(unittest.TestCase):
         self.assertEqual(user.position, [x, y])
         MockMap.put.assert_called_with(x, y, USER)
 
-    def test_user_can_do_action(self):
-        user = User('User')
-        self.assertEqual(user.can_do_action(EMPTY), {
-            'message': 'Впереди пусто',
-            'actions': [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT]
-        })
-        self.assertEqual(user.can_do_action(TREE), {
-            'message': 'вы уперлись лбом в дерево',
-            'actions': [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT, HACK]
-        })
-        self.assertEqual(user.can_do_action(STONE), {
-            'message': 'вы уперлись лбом в камень',
-            'actions': [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT]
-        })
-        self.assertEqual(user.can_do_action(LETTER), {
-            'message': 'Вы видите письмо',
-            'actions': [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT, READ]
-        })
-        self.assertEqual(user.can_do_action(TREASURE), {
-            'message': 'Вы видите сокровище',
-            'actions': [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT, PICK_UP]
-        })
+    def test_can_walk_to(self):
+        user = User('user')
+        knowledge_about = Empty([0, 0])
+        self.assertEqual(user.can_walk_to(DIRECTION_UP, knowledge_about),
+                         [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT])
 
-    def test_user_action(self):
-        user = User()
-        self.assertTrue(False)
+        knowledge_about = Stone([0, 0])
+        self.assertEqual(user.can_walk_to(DIRECTION_UP, knowledge_about),
+                         [DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT])
+
+        knowledge_about = Treasure([0, 0])
+        self.assertEqual(user.can_walk_to(DIRECTION_LEFT, knowledge_about),
+                         [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_RIGHT])
+
+    @patch('small_text_game.src.brain.Treasure')
+    def test_user_do(self, MockTreasure):
+        user = User('User')
+        map = Map()
+        user.action = PICK_UP
+        MockTreasure.can_do.return_value = [PICK_UP]
+        user.do(map, MockTreasure)
+        MockTreasure.do.asssert_called_with(user, user.action, map)
+
+    def test_user_move(self):
+        self.assertFalse(True)
 
 
 if __name__ == '__main__':

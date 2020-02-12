@@ -65,10 +65,6 @@ class Map:
             print(''.join(self.map[y]))
         print('-' * self.width)
 
-    def get_in_direction(self, x, y, direction):
-        new_x, new_y = self.calculate_position(x, y, direction)
-        return self.get(new_x, new_y)
-
     def calculate_position(self, x, y, direction):
         return self.delta_xy[direction][0] + x, self.delta_xy[direction][1] + y
 

@@ -3,6 +3,7 @@ from small_text_game.src.brain import Brain
 
 
 class User:
+    directions = [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT]
     def __init__(self, name):
         self.brain = Brain()
         self.direction = DIRECTION_UP
@@ -24,8 +25,6 @@ class User:
     def is_dead(self):
         return self.health <= 0
 
-    def see(self, map):
-        return map.get_in_direction(self.position[0], self.position[1], self.direction)
 
     def place_on(self, map):
         x, y = map.get_empty_random_position()
@@ -35,13 +34,25 @@ class User:
     def show_info(self, map):
         print("В Вашем инвентаре %d сокровищ" % self.inventory.count(TREASURE))
         print(f"Смотрим в направлении {self.direction}")
-        can_do = self.can_do_action(self.see(map))
-        print(can_do['message'])
-        self.action = input(f"{can_do['actions']}: ")
+        knowledge_about = self.brain.knowledge(map, self.position, self.direction)
+        print(knowledge_about.message())
+        direction = ','.join(self.can_walk_to(self.direction, knowledge_about))
+        self.action = input(
+            f"Идти в направлении [{direction}] или [{'.'.join(knowledge_about.can_do())}]: ")
+        self.do(map, knowledge_about)
 
-    def can_do_action(self, char):
-        recognized_object = self.brain.recognize(char)
-        return {
-            'message': recognized_object.message(),
-            'actions': recognized_object.actions()
-        }
+    def can_walk_to(self, direction, knowledge_about):
+        directions = self.directions.copy()
+        if knowledge_about.it_barier():
+            directions.remove(direction)
+        return directions
+
+    def do(self, map, knowledge_about):
+        if self.action in self.directions:
+            self.move(self.action, map)
+        if self.action in knowledge_about.can_do():
+            knowledge_about.do(self, self.action, map)
+
+    def move(self, action, map):
+        pass
+

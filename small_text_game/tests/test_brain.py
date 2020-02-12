@@ -1,47 +1,75 @@
 import unittest
+from random import randint
+from unittest.mock import patch
 
 from small_text_game.src.brain import *
 from small_text_game.src.options import *
 
 
 class BrainTestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        self.position = [randint(0, 100), randint(0, 100)]
+
     def test_make_brain_object(self):
         brain = Brain()
         self.assertIsNotNone(brain)
 
     def test_generate_object_by_char(self):
         brain = Brain()
-        self.assertIsInstance(brain.recognize(EMPTY), Empty)
-        self.assertIsInstance(brain.recognize(TREE), Tree)
-        self.assertIsInstance(brain.recognize(STONE), Stone)
-        self.assertIsInstance(brain.recognize(LETTER), Letter)
-        self.assertIsInstance(brain.recognize(TREASURE), Treasure)
+        self.assertIsInstance(brain.recognize(EMPTY, self.position), Empty)
+        self.assertIsInstance(brain.recognize(TREE, self.position), Tree)
+        self.assertIsInstance(brain.recognize(STONE, self.position), Stone)
+        self.assertIsInstance(brain.recognize(LETTER, self.position), Letter)
+        self.assertIsInstance(brain.recognize(TREASURE, self.position), Treasure)
 
     def test_empty_object(self):
-        empty = Empty()
-        self.assertEqual(empty.message(), 'Впереди пусто')
-        self.assertEqual(empty.actions(), [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT])
+        object = Empty(self.position)
+        self.assertEqual(object.position, self.position)
+        self.assertIsInstance(object, KnowledgeAbout)
+        self.assertEqual(object.message(), 'Впереди пусто')
+        self.assertEqual(object.can_do(), [])
+        self.assertFalse(object.it_barier())
 
     def test_tree_object(self):
-        tree = Tree()
-        self.assertEqual(tree.message(), 'вы уперлись лбом в дерево')
-        self.assertEqual(tree.actions(), [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT, HACK])
-
+        object = Tree(self.position)
+        self.assertIsInstance(object, KnowledgeAbout)
+        self.assertEqual(object.position, self.position)
+        self.assertEqual(object.message(), 'вы уперлись лбом в дерево')
+        self.assertEqual(object.can_do(), [HACK])
+        self.assertTrue(object.it_barier())
 
     def test_stone_object(self):
-        object = Stone()
+        object = Stone(self.position)
+        self.assertIsInstance(object, KnowledgeAbout)
+        self.assertEqual(object.position, self.position)
         self.assertEqual(object.message(), 'вы уперлись лбом в камень')
-        self.assertEqual(object.actions(), [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT])
+        self.assertEqual(object.can_do(), [])
+        self.assertTrue(object.it_barier())
 
     def test_letter_object(self):
-        object = Letter()
+        object = Letter(self.position)
+        self.assertIsInstance(object, KnowledgeAbout)
+        self.assertEqual(object.position, self.position)
         self.assertEqual(object.message(), 'Вы видите письмо')
-        self.assertEqual(object.actions(), [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT, READ])
+        self.assertEqual(object.can_do(), [READ])
+        self.assertTrue(object.it_barier())
 
     def test_treasure_object(self):
-        object = Treasure()
+        object = Treasure(self.position)
+        self.assertIsInstance(object, KnowledgeAbout)
+        self.assertEqual(object.position, self.position)
         self.assertEqual(object.message(), 'Вы видите сокровище')
-        self.assertEqual(object.actions(), [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT, PICK_UP])
+        self.assertEqual(object.can_do(), [PICK_UP])
+        self.assertTrue(object.it_barier())
+
+    @patch('small_text_game.src.map.Map')
+    def test_user_see(self, MockMap):
+        x, y = randint(0, 100), randint(0, 100)
+        brain = Brain()
+        attrs = {'get.return_value': TREE, 'calculate_position.return_value': [x, y - 1]}
+        MockMap.configure_mock(**attrs)
+        self.assertEqual(brain.see(MockMap, [x, y], DIRECTION_UP), (TREE, [x, y - 1]))
+
 
 if __name__ == '__main__':
     unittest.main()
