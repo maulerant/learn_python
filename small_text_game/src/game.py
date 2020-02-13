@@ -30,7 +30,7 @@ class Game:
 
     def turn(self):
         self.map.show()
-        self.user.show_info(self.map)
+        self.user.turn(self.map)
         if self.is_over():
             raise GameOverException()
 

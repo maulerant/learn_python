@@ -71,3 +71,10 @@ class Map:
     def is_valid_pos(self, x, y):
         return self.height > y >= 0 and self.width > x >= 0
 
+    def move(self, char, start_position, new_position):
+        if self.is_valid_pos(new_position[0], new_position[1]):
+            self.put(start_position[0], start_position[1], self.empty_char)
+            self.put(new_position[0], new_position[1], char)
+
+    def clear(self, position):
+        self.put(position[0], position[1], self.empty_char)

@@ -1,5 +1,5 @@
 import unittest
-from random import randint
+from random import randint, choice
 from unittest.mock import patch
 
 from small_text_game.src.map import Map
@@ -14,6 +14,11 @@ class UserTestCase(unittest.TestCase):
         self.assertIsNotNone(user)
         self.assertEqual(user.name, 'Name')
         self.assertEqual(user.action, '')
+
+    def test_user_has_messages_list(self):
+        user = User('Name')
+        self.assertIsInstance(user.messages, list)
+        self.assertEqual(len(user.messages), 0)
 
     def test_user_has_inventory(self):
         user = User('Name')
@@ -94,8 +99,50 @@ class UserTestCase(unittest.TestCase):
         user.do(map, MockTreasure)
         MockTreasure.do.asssert_called_with(user, user.action, map)
 
-    def test_user_move(self):
-        self.assertFalse(True)
+    @patch('small_text_game.src.map.Map')
+    @patch('small_text_game.src.brain.Brain')
+    def test_change_direction_if_user_move(self, MockMap, MockBrain):
+        user = User('User')
+        user.brain = MockBrain
+        self.assertEqual(user.direction, DIRECTION_UP)
+        user.move(DIRECTION_DOWN, MockMap)
+        self.assertEqual(user.direction, DIRECTION_DOWN)
+
+        direction = choice(user.directions)
+        user.move(direction, MockMap)
+        self.assertEqual(user.direction, direction)
+
+    @patch('small_text_game.src.map.Map')
+    @patch('small_text_game.src.brain.Brain')
+    def test_get_knowledge_about_object_if_user_move(self, MockMap, MockBrain):
+        user = User('User')
+        user.brain = MockBrain
+
+        direction = choice(user.directions)
+        MockBrain.see.return_value = TREE
+        user.move(direction, MockMap)
+        user.brain.knowledge.assert_called_with(MockMap, user.position, direction)
+
+    @patch('small_text_game.src.map.Map')
+    @patch('small_text_game.src.brain.Brain')
+    def test_change_position_if_object_not_barier(self, MockMap, MockBrain):
+        user = User('User')
+        user.brain = MockBrain
+
+        user_position = user.position
+        object_position = [randint(0, 100), randint(0, 100)]
+        direction = choice(user.directions)
+        user.brain.knowledge.return_value = Empty(object_position)
+        user.move(direction, MockMap)
+        self.assertEqual(user.position, object_position)
+        MockMap.move.assert_called_with(USER, user_position, object_position)
+
+    def test_add_new_message_to_users_messages(self):
+        user = User('User')
+        self.assertEqual(len(user.messages), 0)
+        user.new_message('lorem ipsum')
+        self.assertEqual(len(user.messages), 1)
+        self.assertEqual(user.messages.pop(), 'lorem ipsum')
 
 
 if __name__ == '__main__':

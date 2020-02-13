@@ -109,6 +109,34 @@ class MapTestCase(unittest.TestCase):
         map.empty_char = EMPTY
         self.assertEqual(map.get_empty_random_position(), (-1, -1))
 
+    def test_move_object(self):
+        width, height = 20, 20
+        start_position = [randint(0, width - 1), randint(0, height - 1)]
+        new_position = [randint(0, width - 1), randint(0, height - 1)]
+
+        map = Map()
+        map.generate(width, height, EMPTY)
+        map.put(start_position[0], start_position[1], USER)
+
+        self.assertEqual(map.get(start_position[0], start_position[1]), USER)
+        self.assertEqual(map.get(new_position[0], new_position[1]), EMPTY)
+        map.move(USER, start_position, new_position)
+        self.assertEqual(map.get(start_position[0], start_position[1]), EMPTY)
+        self.assertEqual(map.get(new_position[0], new_position[1]), USER)
+
+        map.move(USER, new_position, [-1, -1])
+        self.assertEqual(map.get(new_position[0], new_position[1]), USER)
+
+    def test_clear_position(self):
+        width, height = 20, 20
+        start_position = [randint(0, width - 1), randint(0, height - 1)]
+        map = Map()
+        map.generate(width, height, EMPTY)
+        map.put(start_position[0], start_position[1], USER)
+        self.assertEqual(map.get(start_position[0], start_position[1]), USER)
+        map.clear(start_position)
+        self.assertEqual(map.get(start_position[0], start_position[1]), map.empty_char)
+
 
 if __name__ == '__main__':
     unittest.main()

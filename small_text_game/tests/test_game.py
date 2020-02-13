@@ -43,7 +43,7 @@ class GameTestCase(unittest.TestCase):
         game.user.configure_mock(**attrs)
         game.turn()
         game.map.show.assert_called_once()
-        game.user.show_info.assert_called_with(game.map)
+        game.user.turn.assert_called_with(game.map)
 
     @patch('small_text_game.src.map.Map')
     @patch('small_text_game.src.user.User')

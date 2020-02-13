@@ -26,3 +26,16 @@ DIRECTION_RIGHT = 'd'
 HACK = 'x'
 PICK_UP = 'i'
 READ = 'r'
+
+objects = {
+    EMPTY: 'Empty',
+    TREE: 'Tree',
+    STONE: 'Stone',
+    LETTER: 'Letter',
+    TREASURE: 'Treasure'
+}
+
+INFOS = (
+    'letter 1',
+    'letter 2'
+)
