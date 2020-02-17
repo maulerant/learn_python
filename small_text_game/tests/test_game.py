@@ -1,6 +1,7 @@
 import unittest
 from unittest.mock import patch
 
+from small_text_game.src.camera import Camera
 from small_text_game.src.game import Game, GameOverException
 from small_text_game.src.map import Map
 from small_text_game.src.options import *
@@ -12,6 +13,7 @@ class GameTestCase(unittest.TestCase):
         game = Game()
         self.assertIsNotNone(game)
         self.assertIsInstance(game.user, User)
+        self.assertIsInstance(game.camera, Camera)
 
     def test_init_map(self):
         game = Game()
@@ -33,23 +35,23 @@ class GameTestCase(unittest.TestCase):
         game.place_on_map(20, TREE)
         game.map.place.assert_called_with(20, TREE)
 
-    @patch('small_text_game.src.map.Map')
+    @patch('small_text_game.src.camera.Camera')
     @patch('small_text_game.src.user.User')
-    def test_game_turn(self, MockUser, MockMap):
+    def test_game_turn(self, MockUser, MockCamera):
         game = Game()
-        game.map = MockMap
+        game.camera = MockCamera
         game.user = MockUser
         attrs = {'is_dead.return_value': False, 'has.return_value': False}
         game.user.configure_mock(**attrs)
         game.turn()
-        game.map.show.assert_called_once()
+        game.camera.show.assert_called_with(game.map, game.user)
         game.user.turn.assert_called_with(game.map)
 
-    @patch('small_text_game.src.map.Map')
+    @patch('small_text_game.src.camera.Camera')
     @patch('small_text_game.src.user.User')
-    def test_game_turn_raise_exception_if_user_dead(self, MockUser, MockMap):
+    def test_game_turn_raise_exception_if_user_dead(self, MockUser, MockCamera):
         game = Game()
-        game.map = MockMap
+        game.camera = MockCamera
         game.user = MockUser
         attrs = {'is_dead.return_value': True, 'has.return_value': False}
         game.user.configure_mock(**attrs)
@@ -57,11 +59,11 @@ class GameTestCase(unittest.TestCase):
         with self.assertRaises(GameOverException):
             game.turn()
 
-    @patch('small_text_game.src.map.Map')
+    @patch('small_text_game.src.camera.Camera')
     @patch('small_text_game.src.user.User')
-    def test_game_turn_raise_exception_if_users_inventory_full(self, MockUser, MockMap):
+    def test_game_turn_raise_exception_if_users_inventory_full(self, MockUser, MockCamera):
         game = Game()
-        game.map = MockMap
+        game.camera = MockCamera
         game.user = MockUser
         attrs = {'is_dead.return_value': False, 'has.return_value': True}
         game.user.configure_mock(**attrs)

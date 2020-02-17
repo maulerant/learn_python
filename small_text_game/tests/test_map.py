@@ -137,6 +137,18 @@ class MapTestCase(unittest.TestCase):
         map.clear(start_position)
         self.assertEqual(map.get(start_position[0], start_position[1]), map.empty_char)
 
+    def test_get_map_size(self):
+        width, height = randint(1, 100), randint(1, 100)
+        map = Map()
+        map.generate(width, height, EMPTY)
+        self.assertEqual(map.size(), [width, height])
+
+    def test_get_map_row(self):
+        width, height = randint(1, 100), randint(1, 100)
+        map = Map()
+        map.generate(width, height, EMPTY)
+        row = randint(0, height - 1)
+        self.assertEqual(map.row(row), map.map[row])
 
 if __name__ == '__main__':
     unittest.main()

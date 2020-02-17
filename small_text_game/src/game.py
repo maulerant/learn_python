@@ -1,3 +1,4 @@
+from small_text_game.src.camera import Camera
 from small_text_game.src.map import Map
 from small_text_game.src.user import User
 from small_text_game.src.options import *
@@ -9,6 +10,7 @@ class GameOverException(Exception):
 
 class Game:
     def __init__(self):
+        self.camera = Camera()
         self.map = Map()
         self.user = User('Name')
 
@@ -29,7 +31,7 @@ class Game:
             self.turn()
 
     def turn(self):
-        self.map.show()
+        self.camera.show(self.map, self.user, SMOG_RADIUS)
         self.user.turn(self.map)
         if self.is_over():
             raise GameOverException()

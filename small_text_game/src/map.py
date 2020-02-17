@@ -59,11 +59,6 @@ class Map:
             count += self.map[y].count(char)
         return count
 
-    def show(self):
-        print('-' * self.width)
-        for y in range(self.height):
-            print(''.join(self.map[y]))
-        print('-' * self.width)
 
     def calculate_position(self, x, y, direction):
         return self.delta_xy[direction][0] + x, self.delta_xy[direction][1] + y
@@ -78,3 +73,9 @@ class Map:
 
     def clear(self, position):
         self.put(position[0], position[1], self.empty_char)
+
+    def size(self):
+        return [self.width, self.height]
+
+    def row(self, row):
+        return self.map[row]
