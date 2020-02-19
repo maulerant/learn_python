@@ -1,36 +1,26 @@
+from random import randint
+
+from small_text_game.src.character import Character
 from small_text_game.src.options import *
 from small_text_game.src.brain import Brain
 
 
-class User:
-    directions = [DIRECTION_UP, DIRECTION_DOWN, DIRECTION_LEFT, DIRECTION_RIGHT]
-
+class User(Character):
     def __init__(self, name):
+        super(User, self).__init__(name)
         self.messages = []
         self.brain = Brain()
-        self.direction = DIRECTION_UP
-        self.health = MAX_USER_HEALTH
         self.inventory = []
-        self.name = name
-        self.position = [-1, -1]
-        self.action = ''
 
-    def get_position(self):
-        return self.position
+        self.health = MAX_USER_HEALTH
+        self.max_health = MAX_USER_HEALTH
+        self.char = USER
 
     def has(self, quantity, char):
         return self.inventory.count(char) == quantity
 
     def to_inventory(self, char):
         self.inventory.append(char)
-
-    def is_dead(self):
-        return self.health <= 0
-
-    def place_on(self, map):
-        x, y = map.get_empty_random_position()
-        self.position = [x, y]
-        map.put(x, y, USER)
 
     def turn(self, map):
         self.show_messages()
@@ -59,7 +49,7 @@ class User:
         self.direction = action
         knowledge_about = self.brain.knowledge(map, self.position, self.direction)
         if not knowledge_about.it_barier():
-            map.move(USER, self.position, knowledge_about.position)
+            map.move(self.get_char(), self.position, knowledge_about.position)
             self.position = knowledge_about.position
 
     def new_message(self, text):

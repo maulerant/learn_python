@@ -4,6 +4,7 @@ TREE = 'T'
 STONE = '*'
 LETTER = '@'
 TREASURE = '$'
+MONSTER = 'z'
 
 SMOG = '#'
 SMOG_RADIUS = 2
@@ -17,6 +18,9 @@ MAX_TREASURES = 10
 MAX_LETTERS = 10
 
 MAX_USER_HEALTH = 1000
+MAX_MONSTER_HEALTH = 1000
+MAX_AP = 100
+MAX_HEAL = 100
 
 DIRECTION_UP = 'w'
 DIRECTION_DOWN = 's'
@@ -26,6 +30,8 @@ DIRECTION_RIGHT = 'd'
 HACK = 'x'
 PICK_UP = 'i'
 READ = 'r'
+ATTACK = 'k'
+HEAL = 'h'
 
 objects = {
     EMPTY: 'Empty',

@@ -14,6 +14,7 @@ class UserTestCase(unittest.TestCase):
         self.assertIsNotNone(user)
         self.assertEqual(user.name, 'Name')
         self.assertEqual(user.action, '')
+        self.assertEqual(user.char, USER)
 
     def test_user_has_messages_list(self):
         user = User('Name')
@@ -28,18 +29,11 @@ class UserTestCase(unittest.TestCase):
     def test_user_has_health(self):
         user = User('Name')
         self.assertEqual(user.health, MAX_USER_HEALTH)
+        self.assertEqual(user.max_health, MAX_MONSTER_HEALTH)
 
     def test_user_has_brain(self):
         user = User('Name')
         self.assertIsInstance(user.brain, Brain)
-
-    def test_get_user_default_position(self):
-        user = User('Name')
-        position = user.get_position()
-        self.assertIsInstance(position, list)
-        self.assertEqual(len(position), 2)
-        self.assertEqual(position, [-1, -1])
-        self.assertEqual(user.direction, DIRECTION_UP)
 
     def test_user_put_item_to_inventory(self):
         user = User('Name')
@@ -55,26 +49,6 @@ class UserTestCase(unittest.TestCase):
         self.assertFalse(user.has(1, TREASURE))
         user.to_inventory(TREASURE)
         self.assertTrue(user.has(1, TREASURE))
-
-    def test_user_is_dead(self):
-        user = User('User')
-        self.assertFalse(user.is_dead())
-
-        user.health = 0
-        self.assertTrue(user.is_dead())
-
-        user.health = -1
-        self.assertTrue(user.is_dead())
-
-    @patch('small_text_game.src.map.Map')
-    def test_place_on_map(self, MockMap):
-        x, y = randint(0, 10), randint(0, 20)
-        user = User('User')
-        attrs = {'get_empty_random_position.return_value': (x, y)}
-        MockMap.configure_mock(**attrs)
-        user.place_on(MockMap)
-        self.assertEqual(user.position, [x, y])
-        MockMap.put.assert_called_with(x, y, USER)
 
     def test_can_walk_to(self):
         user = User('user')

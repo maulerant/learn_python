@@ -59,7 +59,6 @@ class Map:
             count += self.map[y].count(char)
         return count
 
-
     def calculate_position(self, x, y, direction):
         return self.delta_xy[direction][0] + x, self.delta_xy[direction][1] + y
 

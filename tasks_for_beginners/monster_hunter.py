@@ -32,7 +32,10 @@ class Character:
         if character_action == ACTION_ATTACK:
             enemy.damage_deal(self.ap)
         else:
-            self.hp = min(self.hp + self.heal, self.max_hp)
+            self.cure()
+
+    def cure(self):
+        self.hp = min(self.hp + self.heal, self.max_hp)
 
     def is_dead(self):
         return self.hp <= 0
