@@ -7,7 +7,7 @@ from small_text_game.src.options import *
 
 class Monster(Character):
     def __init__(self, name):
-        super(Monster, self).__init__(name)
+        super().__init__(name)
 
         self.health = MAX_MONSTER_HEALTH
         self.max_health = MAX_MONSTER_HEALTH
@@ -15,11 +15,15 @@ class Monster(Character):
 
     def turn(self, map):
         if self.find_enemy(map):
+            messages = []
             self.action = self.get_action()
             if self.action == ATTACK:
                 EventManager.getInstance().dispatch(KickEvent(self.enemy_position(map), self.ap))
+                messages.append(f'{self.name} kick {self.ap}')
             else:
                 self.cure()
+                messages.append(f'{self.name} heal {self.heal}')
+            EventManager.getInstance().dispatch(MessageEvent(None, messages))
 
     def find_enemy(self, map):
         for direction in self.directions:
@@ -30,4 +34,9 @@ class Monster(Character):
         return False
 
     def enemy_position(self, map):
-        return map.calculate_position(self.position[0], self.position[1], self.direction)
+        position = map.calculate_position(self.position[0], self.position[1], self.direction)
+        return [position[0], position[1]]
+
+    def killed(self, map):
+        map.clear(self.position)
+        EventManager.getInstance().unbind(KickEvent.name, self, 'damage_deal_event')

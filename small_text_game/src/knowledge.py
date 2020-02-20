@@ -1,6 +1,8 @@
 from abc import ABC, abstractmethod
 from random import choice
 
+from small_text_game.src.event import KickEvent, MessageEvent
+from small_text_game.src.event_manager import EventManager
 from small_text_game.src.options import *
 
 
@@ -87,3 +89,21 @@ class Treasure(KnowledgeAbout):
 
     def can_do(self):
         return [PICK_UP]
+
+
+class Monster(KnowledgeAbout):
+    def do(self, user, action, map):
+        messages = []
+        if action == HEAL:
+            user.cure()
+            messages.append(f'{user.name} heal {user.heal}')
+        if action == ATTACK:
+            EventManager.getInstance().dispatch(KickEvent(self.position, user.ap))
+            messages.append(f'{user.name} kick {user.ap}')
+        EventManager.getInstance().dispatch(MessageEvent(None, messages))
+
+    def message(self):
+        return 'Перед Вами злой монстр'
+
+    def can_do(self):
+        return [ATTACK, HEAL]

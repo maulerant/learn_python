@@ -49,6 +49,14 @@ class KnowledgeTestCase(unittest.TestCase):
         self.assertEqual(object.can_do(), [PICK_UP])
         self.assertTrue(object.it_barier())
 
+    def test_monster_object(self):
+        object = Monster(self.position)
+        self.assertIsInstance(object, KnowledgeAbout)
+        self.assertEqual(object.position, self.position)
+        self.assertEqual(object.message(), 'Перед Вами злой монстр')
+        self.assertEqual(object.can_do(), [ATTACK, HEAL])
+        self.assertTrue(object.it_barier())
+
     @patch('small_text_game.src.user.User')
     @patch('small_text_game.src.map.Map')
     def test_tree_do_action(self, map, user):
@@ -72,6 +80,19 @@ class KnowledgeTestCase(unittest.TestCase):
         map.clear.assert_called_with(self.position)
         user.to_inventory.assert_called_with(LETTER)
         user.new_message.assert_called_with(letter.info)
+
+    @unittest.skip('моки для синглтона')
+    @patch('small_text_game.src.event_manager.EventManager')
+    @patch('small_text_game.src.user.User')
+    @patch('small_text_game.src.map.Map')
+    def test_monster_do_action(self, map, user, event_manager):
+        monster = Monster(self.position)
+        monster.do(user, HEAL, map)
+        user.cure.assert_called_once()
+
+        event_manager.getInstance.return_value = event_manager
+        monster.do(user, ATTACK, map)
+        event_manager.getInstance.assert_called_once()
 
 
 if __name__ == '__main__':

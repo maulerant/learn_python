@@ -22,5 +22,19 @@ class EventTestCase(unittest.TestCase):
         self.assertIsInstance(event, Event)
         self.assertEqual(event.name, 'kick')
 
+    def test_create_message_event_object(self):
+        position = [randint(0, 100), randint(0, 100)]
+        data = ['data']
+        event = MessageEvent(position, data)
+        self.assertIsNotNone(event)
+        self.assertIsInstance(event, Event)
+        self.assertEqual(event.name, 'message')
+        self.assertIsInstance(event.data, list)
+
+        data = 'data'
+        event = MessageEvent(position, data)
+        self.assertIsInstance(event.data, list)
+
+
 if __name__ == '__main__':
     unittest.main()

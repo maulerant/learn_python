@@ -7,7 +7,7 @@ from small_text_game.src.brain import Brain
 
 class User(Character):
     def __init__(self, name):
-        super(User, self).__init__(name)
+        super().__init__(name)
         self.messages = []
         self.brain = Brain()
         self.inventory = []
@@ -22,15 +22,20 @@ class User(Character):
     def to_inventory(self, char):
         self.inventory.append(char)
 
+    def damage_deal_event(self, event):
+        if event.position == self.position:
+            self.damage_deal(int(event.data))
+
     def turn(self, map):
         self.show_messages()
+        self.show_health()
         print("В Вашем инвентаре %d сокровищ" % self.inventory.count(TREASURE))
         print(f"Смотрим в направлении {self.direction}")
         knowledge_about = self.brain.knowledge(map, self.position, self.direction)
         print(knowledge_about.message())
         direction = ','.join(self.can_walk_to(self.direction, knowledge_about))
         self.action = input(
-            f"Идти в направлении [{direction}] или [{'.'.join(knowledge_about.can_do())}]: ")
+            f"Идти в направлении [{direction}] или [{','.join(knowledge_about.can_do())}]: ")
         self.do(map, knowledge_about)
 
     def can_walk_to(self, direction, knowledge_about):

@@ -52,7 +52,20 @@ class EventManagerTestCase(unittest.TestCase):
             ]
         })
 
-    @unittest.skip('Не понятно как замокать getattr')
+    @patch('small_text_game.src.user.User')
+    def test_unbind_subscriber_to_event(self, MockUser):
+        event_manager = EventManager.getInstance()
+        event_manager.subscribers = {}
+        callback = 'damage_deal'
+        event_manager.bind(KickEvent.name, MockUser, callback)
+        self.assertEqual(event_manager.subscribers, {KickEvent.name: [{'object': MockUser, 'callback': callback}]})
+
+        event_manager.unbind(KickEvent.name, MockUser, '')
+        self.assertEqual(event_manager.subscribers, {KickEvent.name: [{'object': MockUser, 'callback': callback}]})
+
+        event_manager.unbind(KickEvent.name, MockUser, callback)
+        self.assertEqual(event_manager.subscribers, {KickEvent.name: []})
+
     @patch('small_text_game.src.user.User')
     def test_dispatch_events(self, MockUser):
         event_manger = EventManager.getInstance()
@@ -63,7 +76,9 @@ class EventManagerTestCase(unittest.TestCase):
         event_manger.bind(KickEvent.name, MockUser, 'damage_deal')
 
         damage = randint(1, 100)
-        event_manger.dispatch(KickEvent(position, damage))
+        event = KickEvent(position, damage)
+        event_manger.dispatch(event)
+        MockUser.damage_deal.assert_called_with(event)
 
     def test_object_is_event(self):
         self.assertTrue(EventManager.getInstance().is_event(KickEvent([], 0)))

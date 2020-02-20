@@ -4,6 +4,7 @@ from random import randint
 from unittest.mock import patch
 
 from small_text_game.src.character import Character
+from small_text_game.src.event import KickEvent
 from small_text_game.src.map import Map
 from small_text_game.src.options import *
 
@@ -77,6 +78,15 @@ class CharacterTestCase(unittest.TestCase):
         self.character.place_on(MockMap)
         self.assertEqual(self.character.position, [x, y])
         MockMap.put.assert_called_with(x, y, USER)
+
+    def test_damage_deal_event(self):
+        current_health = self.character.health
+        damage = randint(1, 100)
+        self.character.damage_deal_event(KickEvent([-100, -100], damage))
+        self.assertEqual(self.character.health, current_health)
+
+        self.character.damage_deal_event(KickEvent(self.character.get_position(), damage))
+        self.assertEqual(self.character.health, current_health - damage)
 
 
 if __name__ == '__main__':

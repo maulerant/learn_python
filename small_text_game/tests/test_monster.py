@@ -1,4 +1,5 @@
 import unittest
+from random import randint
 from unittest.mock import patch
 
 from small_text_game.src.character import Character
@@ -37,8 +38,16 @@ class MonsterTestCase(unittest.TestCase):
     @patch('small_text_game.src.map.Map')
     def test_get_enemy_postion(self, MockMap):
         monster = Monster('Ork')
-        monster.enemy_position(MockMap)
-        MockMap.calculate_position.assset_called_with(monster.position[0], monster.position[1], monster.direction)
+        position = (randint(1, 10), randint(1, 10))
+        MockMap.calculate_position.return_value = position
+        self.assertEqual(monster.enemy_position(MockMap), [position[0], position[1]])
+
+    @patch('small_text_game.src.map.Map')
+    def test_killed(self, MockMap):
+        monster = Monster('Ork')
+        monster.killed(MockMap)
+        MockMap.clear.assert_called_with(monster.position)
+
 
 if __name__ == '__main__':
     unittest.main()
